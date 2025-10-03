@@ -9,86 +9,33 @@ struct Node {
 };
 
 void output(Node* head);
+void addToFront(Node*& head, float value);
+void addToTail(Node*& head, float value);
+void deleteNode(Node*& head, int position);
+void insertNode(Node*& head, int position, float value);
+void deleteList(Node*& head);
 
 int main() {
     Node* head = nullptr;
 
-    // create linked list at head
     for (int i = 0; i < SIZE; i++) {
-        int tmp_val = rand() % 100;
-        Node* newVal = new Node;
-        if (!head) {
-            head = newVal;
-            newVal->next = nullptr;
-            newVal->value = tmp_val;
-        } else {
-            newVal->next = head;
-            newVal->value = tmp_val;
-            head = newVal;
-        }
+        addToFront(head, rand() % 100);
     }
     output(head);
 
-    // deleting a node manually (still inline)
-    Node* current = head;
-    cout << "Which node to delete? " << endl;
-    output(head);
-    int entry;
-    cout << "Choice --> ";
-    cin >> entry;
-
-    current = head;
-    Node* prev = head;
-    for (int i = 0; i < (entry - 1); i++) {
-        if (i == 0)
-            current = current->next;
-        else {
-            current = current->next;
-            prev = prev->next;
-        }
-    }
-    if (current) {
-        prev->next = current->next;
-        delete current;
-        current = nullptr;
-    }
+    int pos;
+    cout << "Which node to delete? ";
+    cin >> pos;
+    deleteNode(head, pos);
     output(head);
 
-    // insert node manually
-    current = head;
-    cout << "After which node to insert 10000? " << endl;
-    int count = 1;
-    while (current) {
-        cout << "[" << count++ << "] " << current->value << endl;
-        current = current->next;
-    }
-    cout << "Choice --> ";
-    cin >> entry;
-
-    current = head;
-    prev = head;
-    for (int i = 0; i < (entry); i++) {
-        if (i == 0)
-            current = current->next;
-        else {
-            current = current->next;
-            prev = prev->next;
-        }
-    }
-    Node* newnode = new Node;
-    newnode->value = 10000;
-    newnode->next = current;
-    prev->next = newnode;
+    cout << "After which node to insert 10000? ";
+    cin >> pos;
+    insertNode(head, pos, 10000);
     output(head);
 
-    // delete full list manually
-    current = head;
-    while (current) {
-        head = current->next;
-        delete current;
-        current = head;
-    }
-    head = nullptr;
+    cout << "Deleting entire list...\n";
+    deleteList(head);
     output(head);
 
     return 0;
@@ -106,4 +53,73 @@ void output(Node* head) {
         current = current->next;
     }
     cout << endl;
+}
+
+void addToFront(Node*& head, float value) {
+    Node* newNode = new Node;
+    newNode->value = value;
+    newNode->next = head;
+    head = newNode;
+}
+
+void addToTail(Node*& head, float value) {
+    Node* newNode = new Node;
+    newNode->value = value;
+    newNode->next = nullptr;
+    if (!head) {
+        head = newNode;
+        return;
+    }
+    Node* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    current->next = newNode;
+}
+
+void deleteNode(Node*& head, int position) {
+    if (!head) return;
+    Node* current = head;
+    if (position == 1) {
+        head = head->next;
+        delete current;
+        return;
+    }
+    Node* prev = nullptr;
+    for (int i = 1; current && i < position; i++) {
+        prev = current;
+        current = current->next;
+    }
+    if (!current) return;
+    prev->next = current->next;
+    delete current;
+}
+
+void insertNode(Node*& head, int position, float value) {
+    if (position <= 0) return;
+    Node* newNode = new Node;
+    newNode->value = value;
+    if (position == 1 && !head) {
+        newNode->next = nullptr;
+        head = newNode;
+        return;
+    }
+    Node* current = head;
+    Node* prev = nullptr;
+    for (int i = 0; current && i < position; i++) {
+        prev = current;
+        current = current->next;
+    }
+    newNode->next = current;
+    prev->next = newNode;
+}
+
+void deleteList(Node*& head) {
+    Node* current = head;
+    while (current) {
+        Node* temp = current;
+        current = current->next;
+        delete temp;
+    }
+    head = nullptr;
 }
